@@ -11,7 +11,7 @@ import com.example.tamp.data.models.User;
 public interface UserDao {
 
     //插入用户
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert
     void insertUser(User user);
 
     //更具名字查找

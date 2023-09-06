@@ -9,13 +9,10 @@ public class User {
 
     @PrimaryKey(autoGenerate = true)
     private int id;
-
     @ColumnInfo(name = "username")
     private String username;
-
     @ColumnInfo(name = "password")
     private String password;
-
     // 构造函数
     public User() {
     }

@@ -81,9 +81,9 @@ public class LoginActivity extends AppCompatActivity {
         Boolean remember = sp.getBoolean("rememberme", false);
         if( remember ) {
             cb_remember.setChecked(true);
-            String phone = sp.getString("username", "");
+            String username = sp.getString("username", "");
             String password = sp.getString("password", "");
-            usernameEditText.setText(phone);
+            usernameEditText.setText(username);
             passwordEditText.setText(password);
             Log.d("flag", "数据读取成功");
         }

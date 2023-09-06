@@ -7,7 +7,7 @@
     android:gravity="center"
     android:background="#FFFFFF">
 
-    <!-- 用户名输入框 -->
+
     <ImageView
         android:id="@+id/logoImageView"
         android:layout_width="220dp"
@@ -16,6 +16,7 @@
         android:layout_marginBottom="32dp"
         android:src="@drawable/logo" />
 
+    <!-- 用户名输入框 -->
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
