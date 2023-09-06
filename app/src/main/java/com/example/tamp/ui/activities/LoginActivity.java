@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -41,17 +42,28 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         setContentView(R.layout.activity_login);
-
+        //初始化数据库
         initDatabase();
+        // 组件初始化
         init();
+        //检查有没有记住我
         readSP();
 
+        //登陆按钮监听
         loginOrRegisterButton.setOnClickListener(v -> {
             String username = usernameEditText.getText().toString();
             String password = passwordEditText.getText().toString();
 
             if (validateInput(username, password)) {
                 handleUserLoginOrRegister(username, password);
+            }
+        });
+        //记住我监听
+        cb_remember.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if ( cb_remember.isChecked() ) {
+                rememberme(); //如果选中，将把数据保存到xml文件
+            } else {
+                unrememberme(); //如果取消选中，则清除xml文件数据
             }
         });
     }
@@ -91,11 +103,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void handleUserLoginOrRegister(String username, String password) {
-        if ( cb_remember.isChecked() ) {
-            rememberme(); //如果选中，将把数据保存到xml文件
-        } else {
-            unrememberme(); //如果取消选中，则清除xml文件数据
-        }
+
 
         Executors.newSingleThreadExecutor().execute(() -> {
             //访问持久层来查询数据库数据
@@ -138,7 +146,6 @@ public class LoginActivity extends AppCompatActivity {
         editor.apply();
         Log.d("flag", "数据已删除");
     }
-
 
     private void registerNewUser(String username, String password) {
         User newUser = new User(username, password);
