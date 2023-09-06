@@ -1,6 +1,5 @@
 package com.example.tamp.ui.activities;
 
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.room.Room;
 
@@ -9,17 +8,15 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.tamp.R;
 import com.example.tamp.data.AppDatabase;
 import com.example.tamp.data.Dao.UserDao;
-import com.example.tamp.data.models.User;
+import com.example.tamp.data.pojo.User;
 
 import java.util.concurrent.Executors;
 
@@ -103,7 +100,6 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void handleUserLoginOrRegister(String username, String password) {
-
 
         Executors.newSingleThreadExecutor().execute(() -> {
             //访问持久层来查询数据库数据

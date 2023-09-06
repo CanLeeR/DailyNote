@@ -1,0 +1,14 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/daily_icon"
+        android:icon="@drawable/ic_dailyed"
+        android:title="Daily" />
+    <item
+        android:id="@+id/list_icon"
+        android:icon="@drawable/ic_listed"
+        android:title="Lists" />
+    <item
+        android:id="@+id/my_icon"
+        android:icon="@drawable/iconmonstr_user_5"
+        android:title="My" />
+</menu>
