@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.room.Room;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
@@ -102,6 +103,12 @@ public class LoginActivity extends AppCompatActivity {
             if (existingUser != null) {
                 if (existingUser.getPassword().equals(password)) {
                     runOnUiThread(() -> Toast.makeText(LoginActivity.this, "登录成功", Toast.LENGTH_SHORT).show());
+                    // 启动 MainActivity
+                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                    startActivity(intent);
+
+                    // 结束 LoginActivity
+                    finish();
                 } else {
                     runOnUiThread(() -> Toast.makeText(LoginActivity.this, "密码错误", Toast.LENGTH_SHORT).show());
                 }
