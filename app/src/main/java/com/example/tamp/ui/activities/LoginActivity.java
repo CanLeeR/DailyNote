@@ -58,9 +58,9 @@ public class LoginActivity extends AppCompatActivity {
         //记住我监听
         cb_remember.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if ( cb_remember.isChecked() ) {
-                rememberme(); //如果选中，将把数据保存到xml文件
+                rememberMe(); //如果选中，将把数据保存到xml文件
             } else {
-                unrememberme(); //如果取消选中，则清除xml文件数据
+                unRememberMe(); //如果取消选中，则清除xml文件数据
             }
         });
     }
@@ -123,7 +123,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     //保存数据（记住我）
-    public void rememberme() {
+    public void rememberMe() {
         String username = usernameEditText.getText().toString();
         String password = passwordEditText.getText().toString();
         SharedPreferences sp = getSharedPreferences("mydata", Context.MODE_PRIVATE);
@@ -135,7 +135,7 @@ public class LoginActivity extends AppCompatActivity {
         Log.d("flag", "数据保存成功");
     }
     //清除数据（取消记住我）
-    public void unrememberme() {
+    public void unRememberMe() {
         SharedPreferences sp = getSharedPreferences("mydata", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
         editor.clear();
