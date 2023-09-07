@@ -22,8 +22,7 @@ import com.example.tamp.data.Dao.DailyDao;
 import com.example.tamp.data.adapeter.DiaryAdapter;
 import com.example.tamp.data.entities.Daily;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
+
 import java.util.List;
 import java.util.concurrent.Executors;
 
@@ -32,7 +31,7 @@ public class DiaryFragment extends Fragment {
     private DailyDao dailyDao;
 
     private View view;
-    final View finalView = view;  // 创建一个final的引用
+    final View finalView = null;  // 创建一个final的引用
 
 
     @Override
@@ -67,6 +66,9 @@ public class DiaryFragment extends Fragment {
 
     private void getDaily(final View view) {
         Executors.newSingleThreadExecutor().execute(() -> {
+//            dailyDao.insertDaily(new Daily(1,"Title 2", "Content  1 ...",LocalDate.now()));
+//            dailyDao.insertDaily(new Daily(1,"Title 3", "Content  1 ...",LocalDate.now()));
+//            dailyDao.insertDaily(new Daily(1,"Title 4", "Content  1 ...",LocalDate.now()));
 
             List<Daily> diaries = dailyDao.getByUserId(1);
 

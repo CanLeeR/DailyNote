@@ -10,8 +10,7 @@ import java.time.LocalDate;
 @Entity(tableName = "daily")
 public class Daily {
 
-    @ColumnInfo(name = "user_id")
-    private Integer userId;
+
 
     @ColumnInfo(name = "daily_id")
     @PrimaryKey(autoGenerate = true)
@@ -23,6 +22,8 @@ public class Daily {
     private String content;
     @ColumnInfo(name = "date")
     private LocalDate date;
+    @ColumnInfo(name = "user_id")
+    private Integer userId;
 
     public Integer getUserId() {
         return userId;
@@ -41,9 +42,8 @@ public class Daily {
     }
 
     @Ignore
-    public Daily(Integer userId, Integer dailyId, String title, String content, LocalDate date) {
+    public Daily(Integer userId, String title, String content, LocalDate date) {
         this.userId = userId;
-        this.dailyId = dailyId;
         this.title = title;
         this.content = content;
         this.date = date;
