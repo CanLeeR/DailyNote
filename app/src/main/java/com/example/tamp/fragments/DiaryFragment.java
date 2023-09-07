@@ -25,10 +25,15 @@ import com.example.tamp.data.entities.Daily;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executors;
 
 public class DiaryFragment extends Fragment {
     private AppDatabase db;
     private DailyDao dailyDao;
+
+    private View view;
+    final View finalView = view;  // 创建一个final的引用
+
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -54,33 +59,28 @@ public class DiaryFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // 初始化组件，如 RecyclerView
 
         // 设置ActionBar
         setActionBar();
-
-
-        // 假数据, 实际中应从数据库或其他源获取
-        dailyDao.insertDaily(new Daily(1,1,"Title 1", "Content  1 ...",LocalDate.now()));
-        dailyDao.insertDaily(new Daily(1,1,"Title 2", "Content  1 ...",LocalDate.now()));
-        dailyDao.insertDaily(new Daily(1,1,"Title 3", "Content  1 ...",LocalDate.now()));
-        dailyDao.insertDaily(new Daily(1,1,"Title 4", "Content  1 ...",LocalDate.now()));
-        dailyDao.insertDaily(new Daily(1,1,"Title 5", "Content  1 ...",LocalDate.now()));
-        dailyDao.insertDaily(new Daily(1,1,"Title 6", "Content  1 ...",LocalDate.now()));
-        dailyDao.insertDaily(new Daily(1,1,"Title 7", "Content  1 ...",LocalDate.now()));
-        dailyDao.insertDaily(new Daily(1,1,"Title 8", "Content  1 ...",LocalDate.now()));
-        dailyDao.insertDaily(new Daily(1,1,"Title 9", "Content  1 ...",LocalDate.now()));
-        dailyDao.insertDaily(new Daily(1,1,"Title 10", "Content  1 ...",LocalDate.now()));
-        dailyDao.insertDaily(new Daily(1,1,"Title 11", "Content  1 ...",LocalDate.now()));
-        dailyDao.insertDaily(new Daily(1,1,"Title 12", "Content  1 ...",LocalDate.now()));
-
-        List<Daily> diaries = dailyDao.getByUserId(1);
-
-        RecyclerView diaryRecyclerView = view.findViewById(R.id.diaryRecyclerView);
-        DiaryAdapter diaryAdapter = new DiaryAdapter(diaries);
-        diaryRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        diaryRecyclerView.setAdapter(diaryAdapter);
+        getDaily(view);
     }
+
+    private void getDaily(final View view) {
+        Executors.newSingleThreadExecutor().execute(() -> {
+
+            List<Daily> diaries = dailyDao.getByUserId(1);
+
+            if(isAdded()) {  // 检查有没有添加到
+                getActivity().runOnUiThread(() -> {
+                    RecyclerView diaryRecyclerView = view.findViewById(R.id.diaryRecyclerView);
+                    DiaryAdapter diaryAdapter = new DiaryAdapter(diaries);
+                    diaryRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+                    diaryRecyclerView.setAdapter(diaryAdapter);
+                });
+            }
+        });
+    }
+
 
     private void setActionBar() {
         AppCompatActivity activity = (AppCompatActivity) getActivity();
