@@ -1,13 +1,22 @@
-package com.example.tamp.data.pojo;
+package com.example.tamp.data.entities;
 
 public class Diary {
+
+    private Integer userId;
     private String title;
     private String content;
     private String date;
 
+    public Integer getUserId() {
+        return userId;
+    }
 
+    public void setUserId(Integer userId) {
+        this.userId = userId;
+    }
 
-    public Diary(String title, String content, String date) {
+    public Diary(Integer userId, String title, String content, String date) {
+        this.userId = userId;
         this.title = title;
         this.content = content;
         this.date = date;

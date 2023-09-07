@@ -4,7 +4,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import android.annotation.SuppressLint;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.view.Menu;
 
 import com.example.tamp.fragments.DiaryFragment;
 import com.example.tamp.fragments.ListsFragment;
@@ -48,6 +53,19 @@ public class MainActivity extends AppCompatActivity {
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new DiaryFragment()).commit();
             bottomNavigationView.setSelectedItemId(R.id.daily_icon);  // 设置默认选中的底部导航项
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.diary_menu, menu);
+
+        Drawable searchIcon = menu.findItem(R.id.search_diary).getIcon();
+        searchIcon.setColorFilter(new PorterDuffColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP));
+
+        Drawable addIcon = menu.findItem(R.id.add_diary).getIcon();
+        addIcon.setColorFilter(new PorterDuffColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP));
+
+        return true;
     }
 
 

@@ -1,4 +1,4 @@
-package com.example.tamp.data.pojo;
+package com.example.tamp.data.entities;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;

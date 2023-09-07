@@ -4,7 +4,7 @@ import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.Query;
 
-import com.example.tamp.data.pojo.User;
+import com.example.tamp.data.entities.User;
 
 @Dao
 public interface UserDao {

@@ -18,7 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import com.example.tamp.R;
 import com.example.tamp.data.adapeter.DiaryAdapter;
-import com.example.tamp.data.pojo.Diary;
+import com.example.tamp.data.entities.Diary;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,8 +47,8 @@ public class DiaryFragment extends Fragment {
 
         // 假数据, 实际中应从数据库或其他源获取
         List<Diary> diaries = new ArrayList<>();
-        diaries.add(new Diary("Title 1", "Content previdhshsgafadadadadadadadadadwaratatstesfsdfsfscsdefsefsfshfjyjfafawfaefafaeffadfdsfaew 1 ...", "2022-01-01"));
-        // 添加更多数据...
+        diaries.add(new Diary(2,"Title 1", "Content previdhshsgafadadadadadadadadadwaratatstesfsdfsfscsdefsefsfshfjyjfafawfaefafaeffadfdsfaew 1 ...", "2022-01-01"));
+
 
         RecyclerView diaryRecyclerView = view.findViewById(R.id.diaryRecyclerView);
         DiaryAdapter diaryAdapter = new DiaryAdapter(diaries);

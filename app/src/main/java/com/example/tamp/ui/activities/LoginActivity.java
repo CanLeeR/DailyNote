@@ -16,7 +16,7 @@ import android.widget.Toast;
 import com.example.tamp.R;
 import com.example.tamp.data.AppDatabase;
 import com.example.tamp.data.Dao.UserDao;
-import com.example.tamp.data.pojo.User;
+import com.example.tamp.data.entities.User;
 
 import java.util.concurrent.Executors;
 

@@ -9,7 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.tamp.R;
-import com.example.tamp.data.pojo.Diary;
+import com.example.tamp.data.entities.Diary;
 
 import java.util.List;
 
