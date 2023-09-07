@@ -9,11 +9,18 @@ import com.example.tamp.data.entities.User;
 @Dao
 public interface UserDao {
 
-    //插入用户
+    /**
+     * 插入用户
+     * @param user
+     */
     @Insert
     void insertUser(User user);
 
-    //更具名字查找
+    /**
+     * 根据名字查找
+     * @param username
+     * @return
+     */
     @Query("SELECT * FROM users WHERE username = :username")
     User getUserByUsername(String username);
 }

@@ -9,15 +9,15 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.tamp.R;
-import com.example.tamp.data.entities.Diary;
+import com.example.tamp.data.entities.Daily;
 
 import java.util.List;
 
 public class DiaryAdapter extends RecyclerView.Adapter<DiaryAdapter.DiaryViewHolder> {
 
-    private List<Diary> diaryList;
+    private List<Daily> diaryList;
 
-    public DiaryAdapter(List<Diary> diaryList) {
+    public DiaryAdapter(List<Daily> diaryList) {
         this.diaryList = diaryList;
     }
 
@@ -30,10 +30,10 @@ public class DiaryAdapter extends RecyclerView.Adapter<DiaryAdapter.DiaryViewHol
 
     @Override
     public void onBindViewHolder(@NonNull DiaryViewHolder holder, int position) {
-        Diary  currentDiary = diaryList.get(position);
+        Daily currentDiary = diaryList.get(position);
         holder.tvTitle.setText(currentDiary.getTitle());
         holder.tvContentPreview.setText(currentDiary.getContent());
-        holder.tvDate.setText(currentDiary.getDate());
+        holder.tvDate.setText(currentDiary.getDate().toString());
     }
 
     @Override

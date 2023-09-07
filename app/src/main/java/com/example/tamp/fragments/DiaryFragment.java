@@ -17,17 +17,31 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import com.example.tamp.R;
+import com.example.tamp.data.AppDatabase;
+import com.example.tamp.data.Dao.DailyDao;
 import com.example.tamp.data.adapeter.DiaryAdapter;
-import com.example.tamp.data.entities.Diary;
+import com.example.tamp.data.entities.Daily;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 public class DiaryFragment extends Fragment {
+    private AppDatabase db;
+    private DailyDao dailyDao;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        db = AppDatabase.getInstance(getContext());
+        dailyDao = db.dailyDao();
+    }
 
     public DiaryFragment() {
         // Required empty public constructor
     }
+
 
     @Nullable
     @Override
@@ -45,10 +59,22 @@ public class DiaryFragment extends Fragment {
         // 设置ActionBar
         setActionBar();
 
-        // 假数据, 实际中应从数据库或其他源获取
-        List<Diary> diaries = new ArrayList<>();
-        diaries.add(new Diary(2,"Title 1", "Content previdhshsgafadadadadadadadadadwaratatstesfsdfsfscsdefsefsfshfjyjfafawfaefafaeffadfdsfaew 1 ...", "2022-01-01"));
 
+        // 假数据, 实际中应从数据库或其他源获取
+        dailyDao.insertDaily(new Daily(1,1,"Title 1", "Content  1 ...",LocalDate.now()));
+        dailyDao.insertDaily(new Daily(1,1,"Title 2", "Content  1 ...",LocalDate.now()));
+        dailyDao.insertDaily(new Daily(1,1,"Title 3", "Content  1 ...",LocalDate.now()));
+        dailyDao.insertDaily(new Daily(1,1,"Title 4", "Content  1 ...",LocalDate.now()));
+        dailyDao.insertDaily(new Daily(1,1,"Title 5", "Content  1 ...",LocalDate.now()));
+        dailyDao.insertDaily(new Daily(1,1,"Title 6", "Content  1 ...",LocalDate.now()));
+        dailyDao.insertDaily(new Daily(1,1,"Title 7", "Content  1 ...",LocalDate.now()));
+        dailyDao.insertDaily(new Daily(1,1,"Title 8", "Content  1 ...",LocalDate.now()));
+        dailyDao.insertDaily(new Daily(1,1,"Title 9", "Content  1 ...",LocalDate.now()));
+        dailyDao.insertDaily(new Daily(1,1,"Title 10", "Content  1 ...",LocalDate.now()));
+        dailyDao.insertDaily(new Daily(1,1,"Title 11", "Content  1 ...",LocalDate.now()));
+        dailyDao.insertDaily(new Daily(1,1,"Title 12", "Content  1 ...",LocalDate.now()));
+
+        List<Daily> diaries = dailyDao.getByUserId(1);
 
         RecyclerView diaryRecyclerView = view.findViewById(R.id.diaryRecyclerView);
         DiaryAdapter diaryAdapter = new DiaryAdapter(diaries);

@@ -3,6 +3,7 @@ package com.example.tamp.ui.activities;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.room.Room;
 
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -16,6 +17,7 @@ import android.widget.Toast;
 import com.example.tamp.R;
 import com.example.tamp.data.AppDatabase;
 import com.example.tamp.data.Dao.UserDao;
+import com.example.tamp.data.Migration.DatabaseMigrations;
 import com.example.tamp.data.entities.User;
 
 import java.util.concurrent.Executors;
@@ -74,9 +76,11 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void initDatabase() {
-        db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "daily").build();
+        db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "daily")
+                .build();
         userDao = db.userDao();
     }
+
 
     private boolean validateInput(String username, String password) {
         if (username.isEmpty() || password.isEmpty()) {

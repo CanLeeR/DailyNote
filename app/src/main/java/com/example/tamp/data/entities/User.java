@@ -2,6 +2,7 @@ package com.example.tamp.data.entities;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 @Entity(tableName = "users")
@@ -17,6 +18,7 @@ public class User {
     public User() {
     }
 
+    @Ignore
     public User(String username, String password) {
         this.username = username;
         this.password = password;
