@@ -10,8 +10,6 @@ import java.time.LocalDate;
 @Entity(tableName = "daily")
 public class Daily {
 
-
-
     @ColumnInfo(name = "daily_id")
     @PrimaryKey(autoGenerate = true)
     private Integer  dailyId;

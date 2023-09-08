@@ -1,5 +1,7 @@
 package com.example.tamp.fragments;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -7,6 +9,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -16,6 +19,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+
 import com.example.tamp.R;
 import com.example.tamp.data.AppDatabase;
 import com.example.tamp.data.Dao.DailyDao;
@@ -58,11 +62,11 @@ public class DiaryFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-
         // 设置ActionBar
         setActionBar();
         getDaily(view);
     }
+
 
     private void getDaily(final View view) {
         Executors.newSingleThreadExecutor().execute(() -> {
@@ -70,17 +74,31 @@ public class DiaryFragment extends Fragment {
 //            dailyDao.insertDaily(new Daily(1,"Title 3", "Content  1 ...",LocalDate.now()));
 //            dailyDao.insertDaily(new Daily(1,"Title 4", "Content  1 ...",LocalDate.now()));
 
-            List<Daily> diaries = dailyDao.getByUserId(1);
+                    int userId = getLoggedInUserId();
+                    List<Daily> diaries;
+                    if (userId != -1) {
+                        diaries = dailyDao.getByUserId(userId);
+                        if (isAdded()) {  // 检查有没有添加到
+                            getActivity().runOnUiThread(() -> {
+                                RecyclerView diaryRecyclerView = view.findViewById(R.id.diaryRecyclerView);
+                                DiaryAdapter diaryAdapter = new DiaryAdapter(diaries);
+                                diaryRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+                                diaryRecyclerView.setAdapter(diaryAdapter);
+                                //添加分割线
+                                DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(diaryRecyclerView.getContext(), DividerItemDecoration.VERTICAL);
+                                diaryRecyclerView.addItemDecoration(dividerItemDecoration);
+                            });
+                        }
+                    } else {
+                        throw new RuntimeException("数据异常");
+                    }
+                }
+        );
+    }
 
-            if(isAdded()) {  // 检查有没有添加到
-                getActivity().runOnUiThread(() -> {
-                    RecyclerView diaryRecyclerView = view.findViewById(R.id.diaryRecyclerView);
-                    DiaryAdapter diaryAdapter = new DiaryAdapter(diaries);
-                    diaryRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-                    diaryRecyclerView.setAdapter(diaryAdapter);
-                });
-            }
-        });
+    private int getLoggedInUserId() {
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
+        return sharedPreferences.getInt("logged_in_user_id", -1);
     }
 
 
@@ -89,9 +107,9 @@ public class DiaryFragment extends Fragment {
         if (activity != null) {
             ActionBar actionBar = activity.getSupportActionBar();
             if (actionBar != null) {
-                actionBar.setTitle("Daily");
-                actionBar.setDisplayHomeAsUpEnabled(false);
-                setHasOptionsMenu(true);
+                actionBar.setTitle("Daily");//title
+                actionBar.setDisplayHomeAsUpEnabled(false);//返回键
+                setHasOptionsMenu(true);//选项菜单
             }
         }
     }

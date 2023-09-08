@@ -112,6 +112,9 @@ public class LoginActivity extends AppCompatActivity {
             if (existingUser != null) {
                 if (existingUser.getPassword().equals(password)) {
                     runOnUiThread(() -> Toast.makeText(LoginActivity.this, "登录成功", Toast.LENGTH_SHORT).show());
+                   //存储用户ID
+                    storeUserId(existingUser.getId());
+
                     // 启动 MainActivity
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                     startActivity(intent);
@@ -125,6 +128,26 @@ public class LoginActivity extends AppCompatActivity {
                 registerNewUser(username, password);
             }
         });
+    }
+
+
+    private void storeUserId(int userId) {
+        SharedPreferences sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putInt("logged_in_user_id", userId);
+        editor.apply();
+    }
+    private void clearUserId() {
+        SharedPreferences sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.remove("logged_in_user_id");
+        editor.apply();
+    }
+    @Override
+    protected void onDestroy() {
+        //删除登录信息（id）
+        clearUserId();
+        super.onDestroy();
     }
 
     //保存数据（记住我）
