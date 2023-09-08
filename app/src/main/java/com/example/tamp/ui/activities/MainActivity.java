@@ -2,6 +2,7 @@ package com.example.tamp.ui.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.room.Room;
 
 import android.annotation.SuppressLint;
@@ -23,6 +24,9 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
 
+    private Fragment fragmentA;
+    private Fragment fragmentB;
+    private Fragment fragmentC;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,33 +34,44 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+        if (savedInstanceState == null) {  // 如果是首次加载
+            fragmentA = new DiaryFragment();
+            fragmentB = new ListsFragment();
+            fragmentC = new MyFragment();
+
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            transaction.add(R.id.fragment_container, fragmentA, "TAG_FRAGMENT_A");
+            transaction.add(R.id.fragment_container, fragmentB, "TAG_FRAGMENT_B");
+            transaction.add(R.id.fragment_container, fragmentC, "TAG_FRAGMENT_C");
+            transaction.hide(fragmentA).hide(fragmentB).hide(fragmentC);  // 默认隐藏它们
+            transaction.show(fragmentA);  // 默认显示第一个Fragment
+            transaction.commit();
+        } else {
+            fragmentA = getSupportFragmentManager().findFragmentByTag("TAG_FRAGMENT_A");
+            fragmentB = getSupportFragmentManager().findFragmentByTag("TAG_FRAGMENT_B");
+            fragmentC = getSupportFragmentManager().findFragmentByTag("TAG_FRAGMENT_C");
+        }
 
         bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
-            Fragment selectedFragment = null;
 
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             switch (item.getItemId()) {
                 case R.id.daily_icon:
-                    selectedFragment = new DiaryFragment();
+                    transaction.hide(fragmentB).hide(fragmentC).show(fragmentA);
                     break;
                 case R.id.list_icon:
-                    selectedFragment = new ListsFragment();
+                    transaction.hide(fragmentA).hide(fragmentC).show(fragmentB);
                     break;
                 case R.id.my_icon:
-                    selectedFragment = new MyFragment();
+                    transaction.hide(fragmentA).hide(fragmentB).show(fragmentC);
                     break;
             }
+            transaction.commit();
 
-            if (selectedFragment != null) {
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, selectedFragment).commit();
-            }
             return true;
         });
 
-        // 默认显示 DiaryFragment
-        if (savedInstanceState == null) {  // 为了避免在设备旋转时重复加载
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new DiaryFragment()).commit();
-            bottomNavigationView.setSelectedItemId(R.id.daily_icon);  // 设置默认选中的底部导航项
-        }
+
     }
 
 
