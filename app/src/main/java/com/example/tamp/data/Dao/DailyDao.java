@@ -46,5 +46,4 @@ public interface DailyDao {
      */
     @Delete
     void deleteDaily(Daily daily);
-
 }

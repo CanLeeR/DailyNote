@@ -12,6 +12,9 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.appcompat.widget.SearchView;
+
+
 
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -19,6 +22,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+
 
 import com.example.tamp.R;
 import com.example.tamp.data.AppDatabase;
@@ -29,10 +33,15 @@ import com.example.tamp.data.entities.Daily;
 
 import java.util.List;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 public class DiaryFragment extends Fragment {
     private AppDatabase db;
     private DailyDao dailyDao;
+
+    int userId;
+
+    List<Daily> diaries;
 
     private View view;
     final View finalView = null;  // 创建一个final的引用
@@ -61,10 +70,16 @@ public class DiaryFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        this.view = view;
 
         // 设置ActionBar
         setActionBar();
         getDaily(view);
+    }
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        this.view = null;
     }
 
 
@@ -74,8 +89,7 @@ public class DiaryFragment extends Fragment {
 //            dailyDao.insertDaily(new Daily(1,"Title 3", "Content  1 ...",LocalDate.now()));
 //            dailyDao.insertDaily(new Daily(1,"Title 4", "Content  1 ...",LocalDate.now()));
 
-                    int userId = getLoggedInUserId();
-                    List<Daily> diaries;
+                    userId = getLoggedInUserId();
                     if (userId != -1) {
                         diaries = dailyDao.getByUserId(userId);
                         if (isAdded()) {  // 检查有没有添加到
@@ -114,24 +128,39 @@ public class DiaryFragment extends Fragment {
         }
     }
 
+
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         inflater.inflate(R.menu.diary_menu, menu);
         super.onCreateOptionsMenu(menu, inflater);
-    }
 
-    // 处理菜单项的点击事件
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.search_diary:
-                // 执行搜索操作
+        MenuItem searchItem = menu.findItem(R.id.action_search);
+        SearchView searchView = (SearchView) searchItem.getActionView();
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                List<Daily> filteredDailies = diaries.stream()
+                        .filter(daily -> daily.getTitle().toLowerCase().contains(query.toLowerCase())
+                                || daily.getContent().toLowerCase().contains(query.toLowerCase()))
+                        .collect(Collectors.toList());
+
+                // 更新RecyclerView的适配器
+                DiaryAdapter diaryAdapter = new DiaryAdapter(filteredDailies);
+                RecyclerView diaryRecyclerView = view.findViewById(R.id.diaryRecyclerView);
+                diaryRecyclerView.setAdapter(diaryAdapter);
                 return true;
-            case R.id.add_diary:
-                // 跳转到添加日记的界面或弹出Dialog
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                if (newText.isEmpty()) {
+                    DiaryAdapter diaryAdapter = new DiaryAdapter(diaries);
+                    RecyclerView diaryRecyclerView = view.findViewById(R.id.diaryRecyclerView);
+                    diaryRecyclerView.setAdapter(diaryAdapter);
+                }
+                return false;
+            }
+        });
     }
 }
