@@ -1,6 +1,7 @@
 package com.example.tamp.fragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
@@ -29,6 +30,9 @@ import com.example.tamp.data.AppDatabase;
 import com.example.tamp.data.Dao.DailyDao;
 import com.example.tamp.data.adapeter.DiaryAdapter;
 import com.example.tamp.data.entities.Daily;
+import com.example.tamp.ui.activities.AddDiaryActivity;
+import com.example.tamp.ui.activities.MainActivity;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 
 import java.util.List;
@@ -75,6 +79,13 @@ public class DiaryFragment extends Fragment {
         // 设置ActionBar
         setActionBar();
         getDaily(view);
+
+        FloatingActionButton fab = view.findViewById(R.id.fab);
+        fab.setOnClickListener(view1 -> {
+            Intent intent = new Intent(getContext(), AddDiaryActivity.class);
+            startActivity(intent);
+        });
+
     }
     @Override
     public void onDestroyView() {

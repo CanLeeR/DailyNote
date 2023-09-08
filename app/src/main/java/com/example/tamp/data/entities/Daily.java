@@ -46,6 +46,12 @@ public class Daily {
         this.content = content;
         this.date = date;
     }
+    @Ignore
+    public Daily( String title, String content) {
+        this.title = title;
+        this.content = content;
+    }
+
 
     public Daily(){
 

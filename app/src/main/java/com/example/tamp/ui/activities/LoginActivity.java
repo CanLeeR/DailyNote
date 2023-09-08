@@ -1,4 +1,5 @@
 package com.example.tamp.ui.activities;
+import com.example.tamp.utils.UserUtils;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.room.Room;
@@ -22,6 +23,7 @@ import com.example.tamp.data.entities.User;
 
 import java.util.concurrent.Executors;
 
+
 public class LoginActivity extends AppCompatActivity {
 
     //数据库
@@ -32,6 +34,8 @@ public class LoginActivity extends AppCompatActivity {
     EditText passwordEditText;
     Button loginOrRegisterButton;
     CheckBox cb_remember;
+
+    UserUtils userUtils;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,7 +117,7 @@ public class LoginActivity extends AppCompatActivity {
                 if (existingUser.getPassword().equals(password)) {
                     runOnUiThread(() -> Toast.makeText(LoginActivity.this, "登录成功", Toast.LENGTH_SHORT).show());
                    //存储用户ID
-                    storeUserId(existingUser.getId());
+                    userUtils.saveLoggedInUserId(this,existingUser.getId());
 
                     // 启动 MainActivity
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
@@ -131,22 +135,11 @@ public class LoginActivity extends AppCompatActivity {
     }
 
 
-    private void storeUserId(int userId) {
-        SharedPreferences sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putInt("logged_in_user_id", userId);
-        editor.apply();
-    }
-    private void clearUserId() {
-        SharedPreferences sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.remove("logged_in_user_id");
-        editor.apply();
-    }
+
     @Override
     protected void onDestroy() {
         //删除登录信息（id）
-        clearUserId();
+
         super.onDestroy();
     }
 

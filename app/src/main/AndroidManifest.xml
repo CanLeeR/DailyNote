@@ -11,17 +11,20 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Tamp"
         tools:targetApi="31">
-
+        <activity
+            android:name=".ui.activities.AddDiaryActivity"
+            android:exported="false" />
         <activity
             android:name=".ui.activities.MainActivity"
+            android:exported="true"></activity>
+        <activity
+            android:name=".ui.activities.LoginActivity"
             android:exported="true">
 
-       </activity>
-        <activity android:name=".ui.activities.LoginActivity"
-            android:exported="true">
             <!-- 添加这个intent-filter使LoginActivity成为启动活动 -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
