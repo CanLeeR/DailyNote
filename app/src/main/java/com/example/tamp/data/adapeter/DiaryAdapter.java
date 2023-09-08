@@ -1,5 +1,6 @@
 package com.example.tamp.data.adapeter;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,6 +41,14 @@ public class DiaryAdapter extends RecyclerView.Adapter<DiaryAdapter.DiaryViewHol
     public int getItemCount() {
         return diaryList.size();
     }
+
+    public void updateData(List<Daily> newDiaries) {
+        Log.d("DiaryAdapter", "Updating data with " + newDiaries.size() + " items.");
+        diaryList = newDiaries;
+        notifyDataSetChanged();
+    }
+
+
 
     static class DiaryViewHolder extends RecyclerView.ViewHolder {
         TextView tvTitle, tvContentPreview, tvDate;

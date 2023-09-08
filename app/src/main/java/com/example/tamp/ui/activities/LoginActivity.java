@@ -135,14 +135,6 @@ public class LoginActivity extends AppCompatActivity {
     }
 
 
-
-    @Override
-    protected void onDestroy() {
-        //删除登录信息（id）
-
-        super.onDestroy();
-    }
-
     //保存数据（记住我）
     public void rememberMe() {
         String username = usernameEditText.getText().toString();

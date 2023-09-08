@@ -12,7 +12,6 @@ import java.util.concurrent.Executors;
 public class AddDiaryViewModel extends ViewModel {
 
     private final DailyDao dailyDao;
-    UserUtils userUtils;
 
     public AddDiaryViewModel(DailyDao dailyDao) {
         this.dailyDao = dailyDao;

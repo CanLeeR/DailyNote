@@ -1,8 +1,9 @@
 package com.example.tamp.fragments;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
+import android.content.IntentFilter;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -10,13 +11,17 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.appcompat.widget.SearchView;
 
 
-
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -30,8 +35,10 @@ import com.example.tamp.data.AppDatabase;
 import com.example.tamp.data.Dao.DailyDao;
 import com.example.tamp.data.adapeter.DiaryAdapter;
 import com.example.tamp.data.entities.Daily;
+import com.example.tamp.data.repository.UserRepository;
 import com.example.tamp.ui.activities.AddDiaryActivity;
-import com.example.tamp.ui.activities.MainActivity;
+import com.example.tamp.utils.UserUtils;
+import com.example.tamp.viewModel.DiaryViewModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 
@@ -42,13 +49,19 @@ import java.util.stream.Collectors;
 public class DiaryFragment extends Fragment {
     private AppDatabase db;
     private DailyDao dailyDao;
+    private RecyclerView diaryRecyclerView;
+    private DiaryAdapter diaryAdapter;
+    private List<Daily> diaries;
 
     int userId;
 
-    List<Daily> diaries;
-
     private View view;
     final View finalView = null;  // 创建一个final的引用
+
+    UserUtils userUtils;
+
+    private DiaryViewModel diaryViewModel;
+
 
 
     @Override
@@ -75,18 +88,59 @@ public class DiaryFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         this.view = view;
+        diaryRecyclerView = view.findViewById(R.id.diaryRecyclerView);
+
 
         // 设置ActionBar
         setActionBar();
         getDaily(view);
-
         FloatingActionButton fab = view.findViewById(R.id.fab);
         fab.setOnClickListener(view1 -> {
             Intent intent = new Intent(getContext(), AddDiaryActivity.class);
             startActivity(intent);
         });
+        AppDatabase db = AppDatabase.getInstance(getContext());
+        DailyDao dailyDao = db.dailyDao();
+        UserRepository userRepository = new UserRepository(getContext());
+        DiaryViewModel diaryViewModel = new ViewModelProvider(this, new ViewModelProvider.Factory() {
+            @NonNull
+            @Override
+            public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
+                return (T) new DiaryViewModel(dailyDao, userRepository);
+            }
+        }).get(DiaryViewModel.class);
+
+
+        diaryViewModel.getDiaries().observe(getViewLifecycleOwner(), diaries -> {
+            Log.d("DiaryFragment", "1111111");
+            // 在这里，当LiveData中的数据发生变化时，这个方法会被调用。
+            // 更新UI，例如刷新RecyclerView的数据
+            if(diaryAdapter == null) {
+                diaryAdapter = new DiaryAdapter(diaries);
+                diaryRecyclerView.setAdapter(diaryAdapter);
+            } else {
+                diaryAdapter.updateData(diaries);
+            }
+        });
+
 
     }
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.d("DiaryFragment", "Fragment is in onResume, active");
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.d("DiaryFragment", "Fragment is in onPause");
+    }
+
+//...同样，也可以为其他生命周期方法
+
+
+
     @Override
     public void onDestroyView() {
         super.onDestroyView();
@@ -100,7 +154,7 @@ public class DiaryFragment extends Fragment {
 //            dailyDao.insertDaily(new Daily(1,"Title 3", "Content  1 ...",LocalDate.now()));
 //            dailyDao.insertDaily(new Daily(1,"Title 4", "Content  1 ...",LocalDate.now()));
 
-                    userId = getLoggedInUserId();
+                    userId = userUtils.getLoggedInUserId(getContext());
                     if (userId != -1) {
                         diaries = dailyDao.getByUserId(userId);
                         if (isAdded()) {  // 检查有没有添加到
@@ -119,11 +173,6 @@ public class DiaryFragment extends Fragment {
                     }
                 }
         );
-    }
-
-    private int getLoggedInUserId() {
-        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
-        return sharedPreferences.getInt("logged_in_user_id", -1);
     }
 
 
@@ -173,5 +222,6 @@ public class DiaryFragment extends Fragment {
                 return false;
             }
         });
+
     }
 }
