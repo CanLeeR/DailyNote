@@ -135,7 +135,7 @@ public class DiaryFragment extends Fragment {
         if (activity != null) {
             ActionBar actionBar = activity.getSupportActionBar();
             if (actionBar != null) {
-                actionBar.setTitle("Diary");//title
+                actionBar.setTitle("Inspiration");//title
                 actionBar.setDisplayHomeAsUpEnabled(false);//返回键
                 setHasOptionsMenu(true);//选项菜单
             }

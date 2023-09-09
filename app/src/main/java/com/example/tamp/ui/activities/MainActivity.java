@@ -62,24 +62,37 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private boolean onNavigationItemSelected(MenuItem item) {
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+        Fragment selectedFragment = null;
+        String title = "";
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+
         switch (item.getItemId()) {
             case R.id.daily_icon:
                 transaction.hide(listsFragment).hide(myFragment).show(diaryFragment);
+                title = "Inspiration";
                 break;
             case R.id.list_icon:
                 transaction.hide(diaryFragment).hide(myFragment).show(listsFragment);
+                title = "ToDo";
                 break;
             case R.id.my_icon:
                 transaction.hide(diaryFragment).hide(listsFragment).show(myFragment);
+                title = "Creation";
                 break;
             default:
                 return false;
         }
+
         transaction.commit();
+
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle(title);  // Set the title for the ActionBar
+        }
 
         return true;
     }
+
 
     @Override
     protected void onDestroy() {
