@@ -19,8 +19,12 @@ public class DiaryViewModel extends ViewModel {
 
     private final DailyDao dailyDao;
 
+    UserRepository userRepository;
+
+
     public DiaryViewModel(DailyDao dailyDao, UserRepository userRepository) {
         this.dailyDao = dailyDao;
+        this.userRepository = userRepository;  // 初始化 userRepository
     }
 
     // 对外暴露为基类LiveData，这样外部类不能修改它，只能观察它
@@ -30,9 +34,9 @@ public class DiaryViewModel extends ViewModel {
 
     // 更新LiveData的方法
     public void fetchDiaries() {
-        // 这是一个示例，假设我们在后台线程中从数据库获取数据
+
         Executors.newSingleThreadExecutor().execute(() -> {
-            List<Daily> diaries = dailyDao.getByUserId(1);
+            List<Daily> diaries = dailyDao.getByUserId(userRepository.getLoggedInUserId());
             diariesLiveData.postValue(diaries); // 使用 postValue 更新LiveData
         });
     }
@@ -41,7 +45,7 @@ public class DiaryViewModel extends ViewModel {
         Executors.newSingleThreadExecutor().execute(() -> {
 
             LocalDate date = LocalDate.now();
-            Daily newDiary = new Daily(1, title, content, date);
+            Daily newDiary = new Daily(userRepository.getLoggedInUserId(), title, content, date);
             dailyDao.insertDaily(newDiary);
             fetchDiaries(); // 数据库更新后，重新获取日记列表
         });

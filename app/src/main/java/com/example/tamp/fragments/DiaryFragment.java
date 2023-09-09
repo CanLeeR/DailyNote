@@ -1,26 +1,8 @@
 package com.example.tamp.fragments;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModel;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.appcompat.widget.SearchView;
-
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -28,10 +10,16 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ImageButton;
-import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.tamp.R;
 import com.example.tamp.data.AppDatabase;
@@ -40,12 +28,10 @@ import com.example.tamp.data.adapeter.DiaryAdapter;
 import com.example.tamp.data.entities.Daily;
 import com.example.tamp.data.repository.UserRepository;
 import com.example.tamp.ui.activities.AddDiaryActivity;
-import com.example.tamp.utils.UserUtils;
-import com.example.tamp.viewModel.DiaryViewModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
@@ -55,7 +41,9 @@ public class DiaryFragment extends Fragment {
     private DiaryAdapter diaryAdapter;
     private DailyDao dailyDao;
     List<Daily> diaries;
-    Button deleteButton;
+    UserRepository userRepository;
+
+
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -71,13 +59,17 @@ public class DiaryFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_diary, container, false);
     }
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        userRepository = new UserRepository(context); // 初始化 UserRepository
+    }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         setActionBar();
-
 
         diaryRecyclerView = view.findViewById(R.id.diaryRecyclerView);
         diaryRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -89,24 +81,32 @@ public class DiaryFragment extends Fragment {
         });
 
         fetchAndDisplayDiaries();
+
     }
 
 
     private void fetchAndDisplayDiaries() {
         Executors.newSingleThreadExecutor().execute(() -> {
-            diaries = dailyDao.getByUserId(1);
+            diaries = dailyDao.getByUserId(userRepository.getLoggedInUserId());
 
             getActivity().runOnUiThread(() -> {
                 if (diaryAdapter == null) {
                     diaryAdapter = new DiaryAdapter(diaries);
+                    diaryAdapter.setOnDiaryLongClickListener(diary -> {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+                        builder.setMessage("确定删除此日记吗？")
+                                .setPositiveButton("确定", (dialog, which) -> deleteDiary(diary))
+                                .setNegativeButton("取消", null)
+                                .show();
+                    });
                     diaryRecyclerView.setAdapter(diaryAdapter);
-                    diaryAdapter.setOnDiaryDeleteListener(this::deleteDiary);  // 移动到这里
                 } else {
                     diaryAdapter.updateData(diaries);
                 }
             });
         });
     }
+
 
     private void deleteDiary(Daily diary) {
         Executors.newSingleThreadExecutor().execute(() -> {
@@ -133,7 +133,7 @@ public class DiaryFragment extends Fragment {
         if (activity != null) {
             ActionBar actionBar = activity.getSupportActionBar();
             if (actionBar != null) {
-                actionBar.setTitle("Daily");//title
+                actionBar.setTitle("Diary");//title
                 actionBar.setDisplayHomeAsUpEnabled(false);//返回键
                 setHasOptionsMenu(true);//选项菜单
             }
