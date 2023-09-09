@@ -1,7 +1,5 @@
 package com.example.tamp.viewModel;
 
-import android.util.Log;
-
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -15,52 +13,41 @@ import java.util.List;
 import java.util.concurrent.Executors;
 
 public class DiaryViewModel extends ViewModel {
+
+    // 使用 MutableLiveData，因为我们想在ViewModel内部修改它
+    private final MutableLiveData<List<Daily>> diariesLiveData = new MutableLiveData<>();
+
     private final DailyDao dailyDao;
-    private final UserRepository userRepository;
 
     public DiaryViewModel(DailyDao dailyDao, UserRepository userRepository) {
         this.dailyDao = dailyDao;
-        this.userRepository = userRepository;
-        refreshDiaries();
     }
-    private MutableLiveData<List<Daily>> diariesLiveData = new MutableLiveData<>();
 
+    // 对外暴露为基类LiveData，这样外部类不能修改它，只能观察它
     public LiveData<List<Daily>> getDiaries() {
         return diariesLiveData;
     }
 
-    public void refreshDiaries() {
+    // 更新LiveData的方法
+    public void fetchDiaries() {
+        // 这是一个示例，假设我们在后台线程中从数据库获取数据
         Executors.newSingleThreadExecutor().execute(() -> {
-            List<Daily> updatedDiaries = dailyDao.getByUserId(userRepository.getLoggedInUserId());
-
-            Log.d("DiaryViewModel", "Fetched " + " diaries from database.");
-
-            diariesLiveData.postValue(updatedDiaries);
+            List<Daily> diaries = dailyDao.getByUserId(1);
+            diariesLiveData.postValue(diaries); // 使用 postValue 更新LiveData
         });
     }
 
-    // 2. 添加新日记
-    public void addDiary(String title, String content) {
+    public void saveDiary(String title, String content) {
         Executors.newSingleThreadExecutor().execute(() -> {
-            Daily daily = new Daily(userRepository.getLoggedInUserId(), title, content, LocalDate.now());
-            dailyDao.insertDaily(daily);
-            refreshDiaries();
+
+            LocalDate date = LocalDate.now();
+            Daily newDiary = new Daily(1, title, content, date);
+            dailyDao.insertDaily(newDiary);
+            fetchDiaries(); // 数据库更新后，重新获取日记列表
         });
     }
 
-    // 3. 更新日记
-    public void updateDiary(Daily daily) {
-        Executors.newSingleThreadExecutor().execute(() -> {
-            dailyDao.updateDaily(daily);
-            refreshDiaries();
-        });
-    }
-
-    // 4. 删除日记
-    public void deleteDiary(Daily daily) {
-        Executors.newSingleThreadExecutor().execute(() -> {
-            dailyDao.deleteDaily(daily);
-            refreshDiaries();
-        });
-    }
 }
+
+
+

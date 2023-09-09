@@ -28,6 +28,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.TextView;
 
 
 import com.example.tamp.R;
@@ -47,33 +50,18 @@ import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 public class DiaryFragment extends Fragment {
-    private AppDatabase db;
-    private DailyDao dailyDao;
+
     private RecyclerView diaryRecyclerView;
     private DiaryAdapter diaryAdapter;
-    private List<Daily> diaries;
-
-    int userId;
-
-    private View view;
-    final View finalView = null;  // 创建一个final的引用
-
-    UserUtils userUtils;
-
-    private DiaryViewModel diaryViewModel;
-
-
+    private DailyDao dailyDao;
+    List<Daily> diaries;
+    Button deleteButton;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        db = AppDatabase.getInstance(getContext());
+        AppDatabase db = AppDatabase.getInstance(getContext());
         dailyDao = db.dailyDao();
-    }
-
-    public DiaryFragment() {
-        // Required empty public constructor
     }
 
 
@@ -87,92 +75,56 @@ public class DiaryFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        this.view = view;
-        diaryRecyclerView = view.findViewById(R.id.diaryRecyclerView);
 
-
-        // 设置ActionBar
         setActionBar();
-        getDaily(view);
+
+
+        diaryRecyclerView = view.findViewById(R.id.diaryRecyclerView);
+        diaryRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
         FloatingActionButton fab = view.findViewById(R.id.fab);
-        fab.setOnClickListener(view1 -> {
+        fab.setOnClickListener(v -> {
             Intent intent = new Intent(getContext(), AddDiaryActivity.class);
             startActivity(intent);
         });
-        AppDatabase db = AppDatabase.getInstance(getContext());
-        DailyDao dailyDao = db.dailyDao();
-        UserRepository userRepository = new UserRepository(getContext());
-        DiaryViewModel diaryViewModel = new ViewModelProvider(this, new ViewModelProvider.Factory() {
-            @NonNull
-            @Override
-            public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
-                return (T) new DiaryViewModel(dailyDao, userRepository);
-            }
-        }).get(DiaryViewModel.class);
 
-
-        diaryViewModel.getDiaries().observe(getViewLifecycleOwner(), diaries -> {
-            Log.d("DiaryFragment", "1111111");
-            // 在这里，当LiveData中的数据发生变化时，这个方法会被调用。
-            // 更新UI，例如刷新RecyclerView的数据
-            if(diaryAdapter == null) {
-                diaryAdapter = new DiaryAdapter(diaries);
-                diaryRecyclerView.setAdapter(diaryAdapter);
-            } else {
-                diaryAdapter.updateData(diaries);
-            }
-        });
-
-
+        fetchAndDisplayDiaries();
     }
+
+
+    private void fetchAndDisplayDiaries() {
+        Executors.newSingleThreadExecutor().execute(() -> {
+            diaries = dailyDao.getByUserId(1);
+
+            getActivity().runOnUiThread(() -> {
+                if (diaryAdapter == null) {
+                    diaryAdapter = new DiaryAdapter(diaries);
+                    diaryRecyclerView.setAdapter(diaryAdapter);
+                    diaryAdapter.setOnDiaryDeleteListener(this::deleteDiary);  // 移动到这里
+                } else {
+                    diaryAdapter.updateData(diaries);
+                }
+            });
+        });
+    }
+
+    private void deleteDiary(Daily diary) {
+        Executors.newSingleThreadExecutor().execute(() -> {
+            dailyDao.deleteDaily(diary);
+            fetchAndDisplayDiaries();  // 更新UI
+        });
+    }
+
+
     @Override
     public void onResume() {
         super.onResume();
-        Log.d("DiaryFragment", "Fragment is in onResume, active");
+        fetchAndDisplayDiaries();
     }
-
     @Override
     public void onPause() {
         super.onPause();
         Log.d("DiaryFragment", "Fragment is in onPause");
-    }
-
-//...同样，也可以为其他生命周期方法
-
-
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        this.view = null;
-    }
-
-
-    private void getDaily(final View view) {
-        Executors.newSingleThreadExecutor().execute(() -> {
-//            dailyDao.insertDaily(new Daily(1,"Title 2", "Content  1 ...",LocalDate.now()));
-//            dailyDao.insertDaily(new Daily(1,"Title 3", "Content  1 ...",LocalDate.now()));
-//            dailyDao.insertDaily(new Daily(1,"Title 4", "Content  1 ...",LocalDate.now()));
-
-                    userId = userUtils.getLoggedInUserId(getContext());
-                    if (userId != -1) {
-                        diaries = dailyDao.getByUserId(userId);
-                        if (isAdded()) {  // 检查有没有添加到
-                            getActivity().runOnUiThread(() -> {
-                                RecyclerView diaryRecyclerView = view.findViewById(R.id.diaryRecyclerView);
-                                DiaryAdapter diaryAdapter = new DiaryAdapter(diaries);
-                                diaryRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-                                diaryRecyclerView.setAdapter(diaryAdapter);
-                                //添加分割线
-                                DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(diaryRecyclerView.getContext(), DividerItemDecoration.VERTICAL);
-                                diaryRecyclerView.addItemDecoration(dividerItemDecoration);
-                            });
-                        }
-                    } else {
-                        throw new RuntimeException("数据异常");
-                    }
-                }
-        );
     }
 
 
@@ -200,28 +152,30 @@ public class DiaryFragment extends Fragment {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                List<Daily> filteredDailies = diaries.stream()
-                        .filter(daily -> daily.getTitle().toLowerCase().contains(query.toLowerCase())
-                                || daily.getContent().toLowerCase().contains(query.toLowerCase()))
-                        .collect(Collectors.toList());
-
-                // 更新RecyclerView的适配器
-                DiaryAdapter diaryAdapter = new DiaryAdapter(filteredDailies);
-                RecyclerView diaryRecyclerView = view.findViewById(R.id.diaryRecyclerView);
-                diaryRecyclerView.setAdapter(diaryAdapter);
+                filterAndDisplayDiaries(query);
                 return true;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
                 if (newText.isEmpty()) {
-                    DiaryAdapter diaryAdapter = new DiaryAdapter(diaries);
-                    RecyclerView diaryRecyclerView = view.findViewById(R.id.diaryRecyclerView);
-                    diaryRecyclerView.setAdapter(diaryAdapter);
+                    diaryAdapter.updateData(diaries);
+                } else {
+                    filterAndDisplayDiaries(newText);
                 }
                 return false;
             }
         });
-
     }
+
+    private void filterAndDisplayDiaries(String query) {
+        if (diaries != null) {
+            List<Daily> filteredDailies = diaries.stream()
+                    .filter(daily -> daily.getTitle().toLowerCase().contains(query.toLowerCase())
+                            || daily.getContent().toLowerCase().contains(query.toLowerCase()))
+                    .collect(Collectors.toList());
+            diaryAdapter.updateData(filteredDailies);
+        }
+    }
+
 }

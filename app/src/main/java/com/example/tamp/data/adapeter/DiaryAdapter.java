@@ -1,9 +1,10 @@
 package com.example.tamp.data.adapeter;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -17,9 +18,15 @@ import java.util.List;
 public class DiaryAdapter extends RecyclerView.Adapter<DiaryAdapter.DiaryViewHolder> {
 
     private List<Daily> diaryList;
+    private OnDiaryDeleteListener deleteListener;  // 删除监听器
 
     public DiaryAdapter(List<Daily> diaryList) {
         this.diaryList = diaryList;
+    }
+
+    // 设置删除监听器的方法
+    public void setOnDiaryDeleteListener(OnDiaryDeleteListener listener) {
+        this.deleteListener = listener;
     }
 
     @NonNull
@@ -43,22 +50,35 @@ public class DiaryAdapter extends RecyclerView.Adapter<DiaryAdapter.DiaryViewHol
     }
 
     public void updateData(List<Daily> newDiaries) {
-        Log.d("DiaryAdapter", "Updating data with " + newDiaries.size() + " items.");
         diaryList = newDiaries;
         notifyDataSetChanged();
     }
 
-
-
-    static class DiaryViewHolder extends RecyclerView.ViewHolder {
+    class DiaryViewHolder extends RecyclerView.ViewHolder {
         TextView tvTitle, tvContentPreview, tvDate;
+        ImageButton deleteButton;
+
 
         public DiaryViewHolder(@NonNull View itemView) {
             super(itemView);
             tvTitle = itemView.findViewById(R.id.tvTitle);
             tvContentPreview = itemView.findViewById(R.id.tvContentPreview);
             tvDate = itemView.findViewById(R.id.tvDate);
+            deleteButton = itemView.findViewById(R.id.deleteButton);
+
+            deleteButton.setOnClickListener(v -> {
+                int position = getAdapterPosition();
+                if (deleteListener != null && position != RecyclerView.NO_POSITION) {
+                    Daily diaryToDelete = diaryList.get(position);
+                    deleteListener.onDelete(diaryToDelete); // 触发监听器
+                    diaryList.remove(position);
+                    notifyItemRemoved(position);
+                }
+            });
         }
     }
-}
 
+    public interface OnDiaryDeleteListener {
+        void onDelete(Daily diary);
+    }
+}
