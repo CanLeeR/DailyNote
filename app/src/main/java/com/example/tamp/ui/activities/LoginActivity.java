@@ -43,6 +43,7 @@ public class LoginActivity extends AppCompatActivity {
         if(getSupportActionBar() != null) {
             getSupportActionBar().hide();
         }
+        userUtils = new UserUtils();
 
         setContentView(R.layout.activity_login);
         //初始化数据库
@@ -118,7 +119,7 @@ public class LoginActivity extends AppCompatActivity {
                     runOnUiThread(() -> Toast.makeText(LoginActivity.this, "登录成功", Toast.LENGTH_SHORT).show());
                    //存储用户ID
                     userUtils.saveLoggedInUserId(this,existingUser.getId());
-
+                    userUtils.saveLoggedInUsername(this,username);
                     // 启动 MainActivity
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                     startActivity(intent);

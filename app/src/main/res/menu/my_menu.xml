@@ -3,5 +3,6 @@
     <item
         android:id="@+id/logout_option"
         android:title="退出登录"
+        android:icon="@drawable/iconmonstr_log_out_4"
         app:showAsAction="always" />
 </menu>

@@ -13,4 +13,8 @@ public class UserRepository {
     public int getLoggedInUserId() {
         return sharedPreferences.getInt("logged_in_user_id", -1);
     }
+
+    public String getUserName() {
+        return sharedPreferences.getString("logged_in_username","CanLee");
+    }
 }
