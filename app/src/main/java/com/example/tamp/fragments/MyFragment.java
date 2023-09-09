@@ -1,9 +1,15 @@
 package com.example.tamp.fragments;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -16,6 +22,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.example.tamp.R;
@@ -23,6 +31,10 @@ import com.example.tamp.data.repository.DiaryRepository;
 import com.example.tamp.data.repository.ListRepository;
 import com.example.tamp.data.repository.UserRepository;
 import com.example.tamp.ui.activities.LoginActivity;
+
+import java.io.IOException;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MyFragment extends Fragment {
 
@@ -32,7 +44,6 @@ public class MyFragment extends Fragment {
     private UserRepository userRepository;
     private DiaryRepository diaryRepository;
     private ListRepository listRepository;
-
 
 
     @Override
@@ -65,7 +76,41 @@ public class MyFragment extends Fragment {
         diaryCountTextView = view.findViewById(R.id.diaryCount);
         listCountTextView = view.findViewById(R.id.listCount);
 
+
         fetchAndDisplayData();
+        CircleImageView profileImageView = view.findViewById(R.id.userProfileImage);
+        profileImageView.setOnClickListener(v -> onProfileImageClick(v));
+    }
+
+    private static final int PERMISSIONS_REQUEST_READ_STORAGE = 2;
+
+    private void requestStoragePermission() {
+        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, PERMISSIONS_REQUEST_READ_STORAGE);
+        }
+    }
+
+    private static final int IMAGE_PICK_REQUEST = 1;
+
+    public void onProfileImageClick(View view) {
+        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(intent, IMAGE_PICK_REQUEST);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == IMAGE_PICK_REQUEST && resultCode == Activity.RESULT_OK && data != null) {
+            Uri selectedImageUri = data.getData();
+            try {
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), selectedImageUri);
+                CircleImageView profileImageView = getView().findViewById(R.id.userProfileImage);
+                profileImageView.setImageBitmap(bitmap);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
 
@@ -84,7 +129,6 @@ public class MyFragment extends Fragment {
             SharedPreferences.Editor editor = preferences.edit();
             editor.clear();
             editor.apply();
-
 
             // 跳转到登录界面并清除其他活动
             Intent intent = new Intent(this.getActivity(), LoginActivity.class);
@@ -109,6 +153,5 @@ public class MyFragment extends Fragment {
 //        int listCount = listRepository.getListCount();
 //        listCountTextView.setText(listCount);
     }
-
 
 }

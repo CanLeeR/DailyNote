@@ -11,7 +11,8 @@
         android:layout_width="218dp"
         android:layout_height="205dp"
         android:src="@drawable/user_profile_image"
-        android:layout_marginBottom="16dp" />
+        android:layout_marginBottom="16dp" android:clickable="true"
+        android:onClick="onChangeImageClicked"/>
 
     <TextView
         android:id="@+id/userName"
