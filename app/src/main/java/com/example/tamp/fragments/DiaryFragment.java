@@ -28,10 +28,10 @@ import com.example.tamp.data.adapeter.DiaryAdapter;
 import com.example.tamp.data.entities.Daily;
 import com.example.tamp.data.repository.UserRepository;
 import com.example.tamp.ui.activities.AddDiaryActivity;
+import com.example.tamp.ui.activities.EditDiaryActivity;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
@@ -70,7 +70,6 @@ public class DiaryFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         setActionBar();
-
         diaryRecyclerView = view.findViewById(R.id.diaryRecyclerView);
         diaryRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
@@ -79,11 +78,8 @@ public class DiaryFragment extends Fragment {
             Intent intent = new Intent(getContext(), AddDiaryActivity.class);
             startActivity(intent);
         });
-
         fetchAndDisplayDiaries();
-
     }
-
 
     private void fetchAndDisplayDiaries() {
         Executors.newSingleThreadExecutor().execute(() -> {
@@ -99,6 +95,12 @@ public class DiaryFragment extends Fragment {
                                 .setNegativeButton("取消", null)
                                 .show();
                     });
+                    diaryAdapter.setOnDiaryClickListener(diary -> {
+                        Intent intent = new Intent(getContext(), EditDiaryActivity.class);
+                        intent.putExtra("DIARY_ID", diary.getDailyId());
+                        startActivity(intent);
+                    });
+
                     diaryRecyclerView.setAdapter(diaryAdapter);
                 } else {
                     diaryAdapter.updateData(diaries);

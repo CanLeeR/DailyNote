@@ -12,11 +12,14 @@
         android:theme="@style/Theme.Tamp"
         tools:targetApi="31">
         <activity
+            android:name=".ui.activities.EditDiaryActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.activities.AddDiaryActivity"
             android:exported="false" />
         <activity
             android:name=".ui.activities.MainActivity"
-            android:exported="true"></activity>
+            android:exported="true" />
         <activity
             android:name=".ui.activities.LoginActivity"
             android:exported="true">

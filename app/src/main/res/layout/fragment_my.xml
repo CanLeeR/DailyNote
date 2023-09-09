@@ -1,15 +1,86 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.MyFragment">
+    android:orientation="vertical"
+    android:paddingTop="65dp"
+    android:gravity="center_horizontal">
 
-    <!-- TODO: Update blank fragment layout -->
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/userProfileImage"
+        android:layout_width="218dp"
+        android:layout_height="205dp"
+        android:src="@drawable/user_profile_image"
+        android:layout_marginBottom="16dp" />
+
     <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:textSize="40dp"
-        android:text="我的测试" />
+        android:id="@+id/userName"
+        android:layout_width="305dp"
+        android:layout_height="66dp"
+        android:layout_marginBottom="24dp"
+        android:gravity="center"
+        android:text="Username"
+        android:textSize="36sp" />
 
-</FrameLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="130dp"
+                android:layout_height="55dp"
+                android:gravity="center"
+                android:text="Diaries"
+                android:textSize="30sp" />
+
+            <TextView
+                android:id="@+id/diaryCount"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:fontFamily="sans-serif-medium"
+                android:gravity="center"
+                android:text="0"
+                android:textSize="24sp" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="#DDDDDD" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="137dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="130dp"
+                android:layout_height="55dp"
+                android:gravity="center"
+                android:text="Lists"
+                android:textSize="30sp" />
+
+            <TextView
+                android:id="@+id/listCount"
+                android:layout_width="43dp"
+                android:layout_height="47dp"
+                android:fontFamily="sans-serif-medium"
+                android:gravity="center"
+                android:text="0"
+                android:textSize="24sp" />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

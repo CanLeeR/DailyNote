@@ -14,7 +14,6 @@ import java.util.concurrent.Executors;
 
 public class DiaryViewModel extends ViewModel {
 
-    // 使用 MutableLiveData，因为我们想在ViewModel内部修改它
     private final MutableLiveData<List<Daily>> diariesLiveData = new MutableLiveData<>();
 
     private final DailyDao dailyDao;
@@ -27,10 +26,6 @@ public class DiaryViewModel extends ViewModel {
         this.userRepository = userRepository;  // 初始化 userRepository
     }
 
-    // 对外暴露为基类LiveData，这样外部类不能修改它，只能观察它
-    public LiveData<List<Daily>> getDiaries() {
-        return diariesLiveData;
-    }
 
     // 更新LiveData的方法
     public void fetchDiaries() {

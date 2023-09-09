@@ -18,6 +18,8 @@ public class DiaryAdapter extends RecyclerView.Adapter<DiaryAdapter.DiaryViewHol
 
     private List<Daily> diaryList;
 
+    private OnDiaryClickListener listener;
+
     public DiaryAdapter(List<Daily> diaryList) {
         this.diaryList = diaryList;
     }
@@ -62,6 +64,13 @@ public class DiaryAdapter extends RecyclerView.Adapter<DiaryAdapter.DiaryViewHol
                 return false;
             });
 
+            itemView.setOnClickListener(v -> {
+                int position = getAdapterPosition();
+                if (listener != null && position != RecyclerView.NO_POSITION) {
+                    listener.onDiaryClick(diaryList.get(position));
+                }
+            });
+
         }
     }
     private OnDiaryLongClickListener onDiaryLongClickListener;
@@ -75,7 +84,11 @@ public class DiaryAdapter extends RecyclerView.Adapter<DiaryAdapter.DiaryViewHol
     }
 
 
-    public interface OnDiaryDeleteListener {
-        void onDelete(Daily diary);
+    public interface OnDiaryClickListener {
+        void onDiaryClick(Daily diary);
+    }
+
+    public void setOnDiaryClickListener(OnDiaryClickListener listener) {
+        this.listener = listener;
     }
 }

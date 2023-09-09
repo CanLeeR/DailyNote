@@ -32,12 +32,20 @@ public interface DailyDao {
     List<Daily> getByUserId(Integer userId);
 
     /**
+     * 根据查询日记
+     * @param dairyId
+     * @return
+     */
+    @Query("select * from daily where daily_id = :dairyId")
+    Daily getDiary(Integer dairyId);
+
+    /**
      * 更新日记
      *
      * @param daily
      */
     @Update
-    void updateDaily(Daily daily);
+    void updateDiary(Daily daily);
 
     /**
      * 删除日记
