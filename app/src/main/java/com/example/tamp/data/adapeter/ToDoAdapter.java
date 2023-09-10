@@ -31,6 +31,12 @@ public class ToDoAdapter extends RecyclerView.Adapter<ToDoAdapter.ToDoViewHolder
         this.toDoList = toDoList;
     }
 
+    public void updateData(List<ToDo> newToDoList) {
+        toDoList = newToDoList;
+        notifyDataSetChanged();
+    }
+
+
     @Override
     public ToDoViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_todo, parent, false);

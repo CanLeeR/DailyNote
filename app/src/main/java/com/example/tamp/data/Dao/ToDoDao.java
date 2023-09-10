@@ -13,8 +13,6 @@ import java.util.List;
 @Dao
 public interface ToDoDao {
 
-    @Query("SELECT * FROM list WHERE user_id = :userId")
-    List<ToDo> getToDoByUserId(int userId);
 
     @Insert
     long insertToDo(ToDo toDo);
@@ -28,5 +26,9 @@ public interface ToDoDao {
     // 查询单一清单
     @Query("SELECT * FROM list WHERE list_id = :toDoId")
     ToDo getToDoById(long toDoId);
+
+    @Query("SELECT * FROM list WHERE user_id = :userId ORDER BY status DESC")
+    List<ToDo> getToDoByUserId(int userId);
+
 }
 

@@ -4,9 +4,9 @@ import androidx.fragment.app.Fragment;
 
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.text.InputType;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +15,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -25,11 +24,11 @@ import com.example.tamp.data.AppDatabase;
 import com.example.tamp.data.Dao.ToDoDao;
 import com.example.tamp.data.adapeter.ToDoAdapter;
 import com.example.tamp.data.entities.ToDo;
+import com.example.tamp.data.repository.UserRepository;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.Executors;
 
 public class ListsFragment extends Fragment {
@@ -38,6 +37,7 @@ public class ListsFragment extends Fragment {
     private ToDoAdapter toDoAdapter;
     private List<ToDo> toDoList = new ArrayList<>();
     private ToDoDao toDoDao;
+    UserRepository userRepository;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -46,6 +46,11 @@ public class ListsFragment extends Fragment {
         toDoDao = db.toDoDao();
     }
 
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        userRepository = new UserRepository(context); // 初始化 UserRepository
+    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -54,34 +59,15 @@ public class ListsFragment extends Fragment {
         recyclerView = view.findViewById(R.id.listRecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
+
         loadSampleData();
-        Log.d("ListsFragment", "Size of toDoList: " + toDoList.size());
         toDoAdapter = new ToDoAdapter(toDoList);
         recyclerView.setAdapter(toDoAdapter);
 
 
         FloatingActionButton fabAddToDo = view.findViewById(R.id.fab_add_todo);
         fabAddToDo.setOnClickListener(v -> showAddToDoDialog());
-        ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
-            @Override
-            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
-                return false; // 不处理上下移动的事件
-            }
-
-            @Override
-            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-                if (direction == ItemTouchHelper.RIGHT) { // 如果是向右滑动
-                    int position = viewHolder.getAdapterPosition(); // 获取当前项的位置
-                    ToDo toDo = toDoList.get(position);
-                    toDo.setStatus(false); // 修改状态为已完成
-                    toDoDao.updateToDo(toDo); // 更新数据库
-                    toDoAdapter.notifyDataSetChanged(); // 刷新适配器
-                }
-            }
-        };
-
-        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleCallback);
-        itemTouchHelper.attachToRecyclerView(recyclerView);
+        swipeToChangeStatus();
 
 
         return view;
@@ -101,9 +87,12 @@ public class ListsFragment extends Fragment {
 
             // 创建一个新的ToDo对象
             ToDo newTodo = new ToDo();
+            newTodo.setStatus(true);
+
             newTodo.setListContent(todoContent);
 
             Executors.newSingleThreadExecutor().execute(() -> {
+                newTodo.setUserId(userRepository.getLoggedInUserId());
                 // 插入到数据库
                 toDoDao.insertToDo(newTodo);
 
@@ -121,14 +110,59 @@ public class ListsFragment extends Fragment {
     }
 
 
-    private void loadSampleData() {
-        for (int i = 0; i < 10; i++) {
-            ToDo toDo = new ToDo();
-            toDo.setListContent("ToDo Item " + (i+1));
-            toDo.setStatus(true);
-            toDoList.add(toDo);
-        }
-        recyclerView.setAdapter(toDoAdapter);
-    }
 
+
+    private void loadSampleData() {
+        Executors.newSingleThreadExecutor().execute(() -> {
+            int userId = userRepository.getLoggedInUserId();
+            toDoList = toDoDao.getToDoByUserId(userId);
+
+            getActivity().runOnUiThread(() -> {
+                if (toDoAdapter == null) {
+                    toDoAdapter = new ToDoAdapter(toDoList);
+
+                    recyclerView.setAdapter(toDoAdapter);
+                } else {
+                    toDoAdapter.updateData(toDoList);
+                }
+            });
+        });
+    }
+    private void swipeToChangeStatus() {
+        ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
+                int position = viewHolder.getAdapterPosition();
+                ToDo task = toDoList.get(position);
+
+                // 根据滑动方向切换任务状态
+                if (swipeDir == ItemTouchHelper.LEFT) {
+                    task.setStatus(true); // 未完成
+                } else if (swipeDir == ItemTouchHelper.RIGHT) {
+                    task.setStatus(false); // 已完成
+                }
+
+                // 更新数据库
+                Executors.newSingleThreadExecutor().execute(() -> {
+                    toDoDao.updateToDo(task);
+
+                    // 重新从数据库加载数据并刷新UI
+                    toDoList = toDoDao.getToDoByUserId(userRepository.getLoggedInUserId());
+
+                    getActivity().runOnUiThread(() -> {
+                        toDoAdapter.updateData(toDoList); // 确保你有一个这样的方法来更新整个数据集
+                    });
+                });
+            }
+        };
+
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleItemTouchCallback);
+        itemTouchHelper.attachToRecyclerView(recyclerView);
+    }
 }
