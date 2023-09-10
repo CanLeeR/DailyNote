@@ -5,20 +5,29 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
-    app:cardElevation="4dp"
-    app:cardCornerRadius="8dp">
+    app:cardCornerRadius="8dp"
+    app:cardElevation="4dp">
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="95dp"
-        android:padding="16dp">
+        android:layout_height="75dp"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp"
+        >
 
         <TextView
             android:id="@+id/tvContent"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:paddingLeft="16dp"
+            android:drawableLeft="@drawable/iconmonstr_check_mark_circle_lined"
+            android:drawablePadding="8dp"
+            android:gravity="center_vertical"
             android:text="ToDo"
-            android:textSize="18sp" />
+            android:textSize="22sp"
+            android:maxLines="1"
+            android:ellipsize="end" />
 
     </RelativeLayout>
 
