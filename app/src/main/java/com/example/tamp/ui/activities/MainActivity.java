@@ -66,7 +66,6 @@ public class MainActivity extends AppCompatActivity {
         Fragment selectedFragment = null;
         String title = "";
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-
         switch (item.getItemId()) {
             case R.id.daily_icon:
                 transaction.hide(listsFragment).hide(myFragment).show(diaryFragment);
@@ -87,9 +86,8 @@ public class MainActivity extends AppCompatActivity {
         transaction.commit();
 
         if (getSupportActionBar() != null) {
-            getSupportActionBar().setTitle(title);  // Set the title for the ActionBar
+            getSupportActionBar().setTitle(title);
         }
-
         return true;
     }
 

@@ -144,13 +144,16 @@ public class MyFragment extends Fragment {
         String username = userRepository.getUserName();
         userNameTextView.setText(username);
 
-//        // 获取日记数量
-//        int diaryCount = diaryRepository.getDiaryCount();
-//        diaryCountTextView.setText (diaryCount);
-//
-//        // 获取清单数量
-//        int listCount = listRepository.getListCount();
-//        listCountTextView.setText(listCount);
+        // 获取日记数量
+        userRepository.getDiaryCount(count -> {
+            diaryCountTextView.setText (String.valueOf(count));
+        });
+
+        userRepository.getToDoCount(count -> {
+            listCountTextView.setText(String.valueOf(count));
+        });
+
+
     }
 
 }

@@ -23,4 +23,10 @@ public interface UserDao {
      */
     @Query("SELECT * FROM users WHERE username = :username")
     User getUserByUsername(String username);
+
+    @Query("SELECT COUNT(*) FROM list WHERE user_id = :userId and status = 1")
+    int getToDoCountForUser(int userId);
+    @Query("SELECT COUNT(*) FROM daily WHERE user_id = :userId")
+    int getDiaryCountForUser(int userId);
+
 }

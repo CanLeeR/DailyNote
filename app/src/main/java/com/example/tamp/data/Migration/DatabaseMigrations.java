@@ -25,7 +25,6 @@ public class DatabaseMigrations {
         public void migrate(@NonNull SupportSQLiteDatabase database) {
 
             database.execSQL("CREATE TABLE IF NOT EXISTS `list` (`list_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `user_id` INTEGER NOT NULL, `list_content` TEXT, `status` INTEGER NOT NULL)");
-
         }
     };
 

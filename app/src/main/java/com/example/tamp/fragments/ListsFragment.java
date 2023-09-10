@@ -68,6 +68,15 @@ public class ListsFragment extends Fragment {
         FloatingActionButton fabAddToDo = view.findViewById(R.id.fab_add_todo);
         fabAddToDo.setOnClickListener(v -> showAddToDoDialog());
         swipeToChangeStatus();
+        toDoAdapter.setOnItemClickListener(todo -> {
+            // 打开编辑对话框
+            showEditToDoDialog(todo);
+        });
+
+        toDoAdapter.setOnItemLongClickListener(todo -> {
+            // 打开删除确认对话框
+            showDeleteConfirmationDialog(todo);
+        });
 
 
         return view;
@@ -93,13 +102,13 @@ public class ListsFragment extends Fragment {
 
             Executors.newSingleThreadExecutor().execute(() -> {
                 newTodo.setUserId(userRepository.getLoggedInUserId());
-                // 插入到数据库
                 toDoDao.insertToDo(newTodo);
 
-                // 更新适配器
+                int userId = userRepository.getLoggedInUserId();
+                List<ToDo> updatedToDoList = toDoDao.getToDoByUserId(userId);
+
                 getActivity().runOnUiThread(() -> {
-                    toDoList.add(newTodo);
-                    toDoAdapter.notifyDataSetChanged();
+                    toDoAdapter.updateData(updatedToDoList);
                     Toast.makeText(getContext(), "清单已添加!", Toast.LENGTH_SHORT).show();
                 });
             });
@@ -111,7 +120,6 @@ public class ListsFragment extends Fragment {
 
 
 
-
     private void loadSampleData() {
         Executors.newSingleThreadExecutor().execute(() -> {
             int userId = userRepository.getLoggedInUserId();
@@ -120,6 +128,7 @@ public class ListsFragment extends Fragment {
             getActivity().runOnUiThread(() -> {
                 if (toDoAdapter == null) {
                     toDoAdapter = new ToDoAdapter(toDoList);
+
 
                     recyclerView.setAdapter(toDoAdapter);
                 } else {
@@ -156,7 +165,7 @@ public class ListsFragment extends Fragment {
                     toDoList = toDoDao.getToDoByUserId(userRepository.getLoggedInUserId());
 
                     getActivity().runOnUiThread(() -> {
-                        toDoAdapter.updateData(toDoList); // 确保你有一个这样的方法来更新整个数据集
+                        toDoAdapter.updateData(toDoList);
                     });
                 });
             }
@@ -165,4 +174,50 @@ public class ListsFragment extends Fragment {
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleItemTouchCallback);
         itemTouchHelper.attachToRecyclerView(recyclerView);
     }
+
+    private void showEditToDoDialog(ToDo todo) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle("编辑清单");
+
+        final EditText input = new EditText(getContext());
+        input.setText(todo.getListContent());
+        builder.setView(input);
+
+        builder.setPositiveButton("确定", (dialog, which) -> {
+            todo.setListContent(input.getText().toString());
+            // 更新数据库
+            Executors.newSingleThreadExecutor().execute(() -> {
+                toDoDao.updateToDo(todo);
+                // 重新从数据库加载数据并刷新UI
+                List<ToDo> updatedToDoList = toDoDao.getToDoByUserId(userRepository.getLoggedInUserId());
+                getActivity().runOnUiThread(() -> {
+                    toDoAdapter.updateData(updatedToDoList);
+                });
+            });
+        });
+
+        builder.setNegativeButton("取消", null);
+        builder.show();
+    }
+
+    private void showDeleteConfirmationDialog(ToDo todo) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle("确认删除?");
+
+        builder.setPositiveButton("删除", (dialog, which) -> {
+            // 从数据库中删除该ToDo
+            Executors.newSingleThreadExecutor().execute(() -> {
+                toDoDao.deleteToDo(todo);
+                // 重新从数据库加载数据并刷新UI
+                List<ToDo> updatedToDoList = toDoDao.getToDoByUserId(userRepository.getLoggedInUserId());
+                getActivity().runOnUiThread(() -> {
+                    toDoAdapter.updateData(updatedToDoList);
+                });
+            });
+        });
+
+        builder.setNegativeButton("取消", null);
+        builder.show();
+    }
+
 }

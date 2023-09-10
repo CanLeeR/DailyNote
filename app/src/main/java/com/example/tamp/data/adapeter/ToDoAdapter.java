@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -22,13 +23,32 @@ public class ToDoAdapter extends RecyclerView.Adapter<ToDoAdapter.ToDoViewHolder
 
     private List<ToDo> toDoList;
 
+    private OnItemLongClickListener onItemLongClickListener;
+    private OnItemClickListener onItemClickListener;
+
+    public interface OnItemLongClickListener {
+        void onItemLongClick(ToDo todo);
+    }
+
+    public interface OnItemClickListener {
+        void onItemClick(ToDo todo);
+    }
+
+    public ToDoAdapter(List<ToDo> toDoList) {
+        this.toDoList = toDoList;
+    }
+
+    public void setOnItemLongClickListener(OnItemLongClickListener listener) {
+        this.onItemLongClickListener = listener;
+    }
+
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        this.onItemClickListener = listener;
+    }
 
     @Override
     public int getItemCount() {
         return toDoList.size();
-    }
-    public ToDoAdapter(List<ToDo> toDoList) {
-        this.toDoList = toDoList;
     }
 
     public void updateData(List<ToDo> newToDoList) {
@@ -36,38 +56,20 @@ public class ToDoAdapter extends RecyclerView.Adapter<ToDoAdapter.ToDoViewHolder
         notifyDataSetChanged();
     }
 
-
+    @NonNull
     @Override
     public ToDoViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_todo, parent, false);
-
         return new ToDoViewHolder(view);
-
     }
+
     @Override
     public void onBindViewHolder(@NonNull ToDoViewHolder holder, int position) {
         ToDo toDo = toDoList.get(position);
-        holder.tvContent.setText(toDo.getListContent());
-
-        if(toDo.getStatus()) { // 如果清单项为未完成状态
-            int[] colors = {
-                    R.color.soft_green,
-                    R.color.soft_blue,
-                    R.color.soft_pink,
-                    R.color.soft_yellow
-            };
-            Random rand = new Random();
-            int randomColor = colors[rand.nextInt(colors.length)];
-            holder.cardView.setCardBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), randomColor));
-        } else { // 如果清单项为已完成状态
-            holder.cardView.setCardBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.completed_gray));
-        }
+        holder.bindData(toDo, onItemClickListener, onItemLongClickListener);
     }
 
-
-
     public static class ToDoViewHolder extends RecyclerView.ViewHolder {
-
         TextView tvContent;
         CardView cardView;
 
@@ -76,7 +78,40 @@ public class ToDoAdapter extends RecyclerView.Adapter<ToDoAdapter.ToDoViewHolder
             tvContent = itemView.findViewById(R.id.tvContent);
             cardView = itemView.findViewById(R.id.cardView);
         }
+
+        public void bindData(ToDo todo,
+                             OnItemClickListener clickListener,
+                             OnItemLongClickListener longClickListener) {
+            tvContent.setText(todo.getListContent());
+
+            if(todo.getStatus()) {
+                int[] colors = {
+                        R.color.soft_green,
+                        R.color.soft_blue,
+                        R.color.soft_pink,
+                        R.color.soft_yellow
+                };
+                Random rand = new Random();
+                int randomColor = colors[rand.nextInt(colors.length)];
+                cardView.setCardBackgroundColor(ContextCompat.getColor(cardView.getContext(), randomColor));
+            } else {
+                cardView.setCardBackgroundColor(ContextCompat.getColor(cardView.getContext(), R.color.completed_gray));
+            }
+
+            itemView.setOnLongClickListener(v -> {
+                if (longClickListener != null) {
+                    longClickListener.onItemLongClick(todo);
+                    return true;
+                }
+                return false;
+            });
+
+            itemView.setOnClickListener(v -> {
+                if (clickListener != null) {
+                    clickListener.onItemClick(todo);
+                }
+            });
+        }
     }
-
-
 }
+
