@@ -1,5 +1,6 @@
 package com.example.tamp.data.Migration;
 
+import androidx.annotation.NonNull;
 import androidx.room.migration.Migration;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
@@ -17,7 +18,19 @@ public class DatabaseMigrations {
                             "content TEXT," +
                             "date TEXT)"
             );
-
         }
     };
+    public static final Migration MIGRATION_2_3 = new Migration(2, 3) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+
+            database.execSQL("CREATE TABLE IF NOT EXISTS `ToDo` (`" +
+                    "list_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                    "`user_id` INTEGER NOT NULL, " +
+                    "`list_content` TEXT," +
+                    "`status` INTEGER NOT NULL)"
+            );
+        }
+    };
+
 }
