@@ -8,16 +8,19 @@ import androidx.room.RoomDatabase;
 import androidx.room.TypeConverters;
 
 import com.example.tamp.data.Dao.DailyDao;
+import com.example.tamp.data.Dao.ToDoDao;
 import com.example.tamp.data.Dao.UserDao;
 import com.example.tamp.data.entities.Daily;
+import com.example.tamp.data.entities.ToDo;
 import com.example.tamp.data.entities.User;
 
-@Database(entities = {User.class, Daily.class}, version = 2)
+@Database(entities = {User.class, Daily.class, ToDo.class}, version = 3)
 @TypeConverters({Converters.class})
 public abstract class AppDatabase extends RoomDatabase {
 
     public abstract UserDao userDao();
     public abstract DailyDao dailyDao();
+    public  abstract ToDoDao toDoDao();
 
     private static volatile AppDatabase INSTANCE;
 

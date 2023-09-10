@@ -126,7 +126,6 @@ public class DiaryFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        Log.d("DiaryFragment", "Fragment is in onPause");
     }
 
 

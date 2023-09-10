@@ -24,12 +24,8 @@ public class DatabaseMigrations {
         @Override
         public void migrate(@NonNull SupportSQLiteDatabase database) {
 
-            database.execSQL("CREATE TABLE IF NOT EXISTS `ToDo` (`" +
-                    "list_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
-                    "`user_id` INTEGER NOT NULL, " +
-                    "`list_content` TEXT," +
-                    "`status` INTEGER NOT NULL)"
-            );
+            database.execSQL("CREATE TABLE IF NOT EXISTS `list` (`list_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `user_id` INTEGER NOT NULL, `list_content` TEXT, `status` INTEGER NOT NULL)");
+
         }
     };
 

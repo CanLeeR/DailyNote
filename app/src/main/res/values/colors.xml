@@ -8,6 +8,11 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="hintTextColor">#DCD3D3D3</color>
-        <color name="colorPrimary">#2196F3</color>
-        <color name="colorAccent">#FF4081</color>
+    <color name="colorPrimary">#2196F3</color>
+    <color name="colorAccent">#FF4081</color>
+    <color name="soft_green">#AEEAA3</color>
+    <color name="soft_blue">#1FD3EC</color>
+    <color name="soft_pink">#FB98EE</color>
+    <color name="soft_yellow">#F8EB0B</color>
+    <color name="completed_gray">#D3D3D3</color>
 </resources>

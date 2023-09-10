@@ -81,7 +81,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void initDatabase() {
-        db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "list")
+        db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "daily")
                 .addMigrations(DatabaseMigrations.MIGRATION_2_3)
                 .build();
         userDao = db.userDao();
