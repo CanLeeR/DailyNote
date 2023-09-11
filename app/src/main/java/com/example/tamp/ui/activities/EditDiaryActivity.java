@@ -12,6 +12,7 @@ import com.example.tamp.data.AppDatabase;
 import com.example.tamp.data.Dao.DailyDao;
 import com.example.tamp.data.entities.Daily;
 
+import java.time.LocalDate;
 import java.util.concurrent.Executors;
 
 public class EditDiaryActivity extends AppCompatActivity {
@@ -58,6 +59,7 @@ public class EditDiaryActivity extends AppCompatActivity {
                 // 更新日记实体的内容
                 diary.setTitle(editedTitle);
                 diary.setContent(editedContent);
+                diary.setDate(LocalDate.now());
                 // 将日记实体的变更保存回数据库
                 dailyDao.updateDiary(diary);
             }
