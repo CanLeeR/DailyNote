@@ -78,7 +78,6 @@ public class ListsFragment extends Fragment {
             showDeleteConfirmationDialog(todo);
         });
 
-
         return view;
     }
 
@@ -128,8 +127,6 @@ public class ListsFragment extends Fragment {
             getActivity().runOnUiThread(() -> {
                 if (toDoAdapter == null) {
                     toDoAdapter = new ToDoAdapter(toDoList);
-
-
                     recyclerView.setAdapter(toDoAdapter);
                 } else {
                     toDoAdapter.updateData(toDoList);
@@ -160,10 +157,8 @@ public class ListsFragment extends Fragment {
                 // 更新数据库
                 Executors.newSingleThreadExecutor().execute(() -> {
                     toDoDao.updateToDo(task);
-
                     // 重新从数据库加载数据并刷新UI
                     toDoList = toDoDao.getToDoByUserId(userRepository.getLoggedInUserId());
-
                     getActivity().runOnUiThread(() -> {
                         toDoAdapter.updateData(toDoList);
                     });
