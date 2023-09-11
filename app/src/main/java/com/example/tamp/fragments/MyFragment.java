@@ -20,15 +20,10 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.example.tamp.R;
-import com.example.tamp.data.repository.DiaryRepository;
-import com.example.tamp.data.repository.ListRepository;
 import com.example.tamp.data.repository.UserRepository;
 import com.example.tamp.ui.activities.LoginActivity;
 
@@ -42,15 +37,11 @@ public class MyFragment extends Fragment {
     private TextView diaryCountTextView;
     private TextView listCountTextView;
     private UserRepository userRepository;
-    private DiaryRepository diaryRepository;
-    private ListRepository listRepository;
-
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);  // 这样才能让Fragment添加自己的选项菜单。
-
     }
 
     @Override
@@ -58,8 +49,6 @@ public class MyFragment extends Fragment {
         super.onAttach(context);
 
         userRepository = new UserRepository(context);
-        diaryRepository = new DiaryRepository(context);
-        listRepository = new ListRepository(context);
     }
 
     @Nullable
@@ -75,7 +64,6 @@ public class MyFragment extends Fragment {
         userNameTextView = view.findViewById(R.id.userName);
         diaryCountTextView = view.findViewById(R.id.diaryCount);
         listCountTextView = view.findViewById(R.id.listCount);
-
 
         fetchAndDisplayData();
         CircleImageView profileImageView = view.findViewById(R.id.userProfileImage);
@@ -113,7 +101,6 @@ public class MyFragment extends Fragment {
         }
     }
 
-
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
@@ -143,17 +130,12 @@ public class MyFragment extends Fragment {
         // 获取用户名
         String username = userRepository.getUserName();
         userNameTextView.setText(username);
-
         // 获取日记数量
         userRepository.getDiaryCount(count -> {
             diaryCountTextView.setText (String.valueOf(count));
         });
-
         userRepository.getToDoCount(count -> {
             listCountTextView.setText(String.valueOf(count));
         });
-
-
     }
-
 }

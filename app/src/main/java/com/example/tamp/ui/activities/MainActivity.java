@@ -37,9 +37,7 @@ public class MainActivity extends AppCompatActivity {
         } else {
             restoreFragments();
         }
-
         bottomNavigationView.setOnNavigationItemSelectedListener(this::onNavigationItemSelected);
-
     }
 
     private void initializeFragments() {
@@ -66,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
         Fragment selectedFragment = null;
         String title = "";
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+
         switch (item.getItemId()) {
             case R.id.daily_icon:
                 transaction.hide(listsFragment).hide(myFragment).show(diaryFragment);
@@ -76,6 +75,13 @@ public class MainActivity extends AppCompatActivity {
                 title = "ToDo";
                 break;
             case R.id.my_icon:
+                // 移除并重新添加 myFragment 以刷新数据
+                if (myFragment != null) {
+                    transaction.remove(myFragment);
+                }
+                myFragment = new MyFragment();  // 重新实例化
+                transaction.add(R.id.fragment_container, myFragment, "TAG_MY_FRAGMENT");
+
                 transaction.hide(diaryFragment).hide(listsFragment).show(myFragment);
                 title = "Creation";
                 break;
@@ -88,8 +94,10 @@ public class MainActivity extends AppCompatActivity {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle(title);
         }
+
         return true;
     }
+
 
 
     @Override

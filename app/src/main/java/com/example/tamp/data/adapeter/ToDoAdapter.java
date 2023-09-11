@@ -67,6 +67,11 @@ public class ToDoAdapter extends RecyclerView.Adapter<ToDoAdapter.ToDoViewHolder
     public void onBindViewHolder(@NonNull ToDoViewHolder holder, int position) {
         ToDo toDo = toDoList.get(position);
         holder.bindData(toDo, onItemClickListener, onItemLongClickListener);
+        if(toDo.getStatus()) {
+            holder.tvContent.setCompoundDrawablesWithIntrinsicBounds(R.drawable.iconmonstr_check_mark_circle_lined, 0, 0, 0);
+        } else {
+            holder.tvContent.setCompoundDrawablesWithIntrinsicBounds(R.drawable.iconmonstr_check_mark_14, 0, 0, 0);
+        }
     }
 
     public static class ToDoViewHolder extends RecyclerView.ViewHolder {

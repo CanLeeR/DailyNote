@@ -2,11 +2,11 @@
     <item
         android:id="@+id/daily_icon"
         android:icon="@drawable/ic_dailyed"
-        android:title="Daily" />
+        android:title="Diary" />
     <item
         android:id="@+id/list_icon"
         android:icon="@drawable/ic_listed"
-        android:title="Lists" />
+        android:title="ToDo" />
     <item
         android:id="@+id/my_icon"
         android:icon="@drawable/iconmonstr_user_5"
